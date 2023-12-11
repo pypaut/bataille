@@ -1,0 +1,6 @@
+- [X] Refactor Deck: start with how you want it look like in game?
+- [X] Replace debug text with actual text rendering
+    - [ ] Use an image showing last winner
+    - [ ] Display remaining cards
+- [ ] Mouse hovering
+- [ ] Controller support
