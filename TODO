@@ -1,6 +1,11 @@
 - [X] Refactor Deck: start with how you want it look like in game?
 - [X] Replace debug text with actual text rendering
-    - [ ] Use an image showing last winner
-    - [ ] Display remaining cards
+- [X] Separate text into several places
+    - [X] Player one remaining cards
+    - [X] Player two remaining cards
+    - [X] Show last winner
+- [ ] Show last winner during play, not after
+- [ ] Testing
+- [ ] Background, with animations
 - [ ] Mouse hovering
 - [ ] Controller support
