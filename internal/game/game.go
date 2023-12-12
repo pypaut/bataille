@@ -13,7 +13,6 @@ import (
 
 	"github.com/golang/freetype"
 	"github.com/hajimehoshi/ebiten/v2"
-	// "github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text"
 )
@@ -28,12 +27,15 @@ type Game struct {
 	DeckOne *deck.Deck
 	DeckTwo *deck.Deck
 
-	ShowCards     bool
-	ScreenMessage string
-	DrawOptions   ebiten.DrawImageOptions
+	ShowCards   bool
+	DrawOptions ebiten.DrawImageOptions
 
-	FontFace  font.Face
-	FontColor color.Color
+	PlayerOneMessage string
+	PlayerTwoMessage string
+	PlayerOneWins    string
+	PlayerTwoWins    string
+	FontFace         font.Face
+	FontColor        color.Color
 }
 
 func NewGame() *Game {
@@ -58,7 +60,11 @@ func NewGame() *Game {
 		return nil
 	}
 
-	fontFace := truetype.NewFace(f, &truetype.Options{Size: 12, DPI: 72, Hinting: font.HintingFull})
+	fontFace := truetype.NewFace(f, &truetype.Options{
+		Size:    50,
+		DPI:     72,
+		Hinting: font.HintingFull,
+	})
 	fontColor := color.RGBA{R: 255, G: 255, B: 255, A: 255}
 
 	return &Game{
@@ -89,7 +95,9 @@ func (g *Game) Update() error {
 	justClicked := inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
 
 	if g.ShowCards && justClicked {
-		msg := ""
+		g.ShowCards = false
+		g.PlayerOneWins = ""
+		g.PlayerTwoWins = ""
 
 		winValue, err := g.DeckOne.WinsAgainst(g.DeckTwo)
 		if err != nil {
@@ -104,7 +112,7 @@ func (g *Game) Update() error {
 				g.DeckTwo.Cards[0],
 			)
 
-			msg = "Player one wins!"
+			g.PlayerOneWins = "+"
 
 		} else if winValue == -1 {
 			// Add cards to back of DeckTwo
@@ -114,8 +122,9 @@ func (g *Game) Update() error {
 				g.DeckOne.Cards[0],
 			)
 
-			msg = "Player two wins!"
-		} else {
+			g.PlayerTwoWins = "+"
+
+		} else if winValue == 0 { // Draw
 			// Check if duplicate
 			if g.DeckOne.Cards[0].Color == g.DeckTwo.Cards[0].Color {
 				c := g.DeckOne.Cards[0]
@@ -123,25 +132,21 @@ func (g *Game) Update() error {
 				return errors.New(errorMsg)
 			}
 
+			g.PlayerOneWins = ""
+			g.PlayerTwoWins = ""
+
 			// Move both front cards to the back
 			g.DeckOne.Cards = append(g.DeckOne.Cards, g.DeckOne.Cards[0])
 			g.DeckTwo.Cards = append(g.DeckTwo.Cards, g.DeckTwo.Cards[0])
-			msg = "It's a draw!"
+		} else if winValue == -2 {
+			fmt.Printf("Error: unknown value")
 		}
 
 		// Rm first cards
 		g.DeckOne.Cards = g.DeckOne.Cards[1:]
 		g.DeckTwo.Cards = g.DeckTwo.Cards[1:]
-
-		g.ShowCards = false
-		g.ScreenMessage = fmt.Sprintf(
-			"Deck 1: %d\nDeck 2: %d\n%s", len(g.DeckOne.Cards), len(g.DeckTwo.Cards), msg,
-		)
 	} else if justClicked {
 		g.ShowCards = true
-		g.ScreenMessage = fmt.Sprintf(
-			"Deck 1: %d\nDeck 2: %d\n", len(g.DeckOne.Cards), len(g.DeckTwo.Cards),
-		)
 	}
 
 	if len(g.DeckOne.Cards)+len(g.DeckTwo.Cards) != 52 {
@@ -150,8 +155,12 @@ func (g *Game) Update() error {
 			len(g.DeckOne.Cards),
 			len(g.DeckTwo.Cards),
 		)
+
 		return errors.New(errorMsg)
 	}
+
+	g.PlayerOneMessage = fmt.Sprintf("%d", len(g.DeckOne.Cards))
+	g.PlayerTwoMessage = fmt.Sprintf("%d", len(g.DeckTwo.Cards))
 
 	return nil
 }
@@ -195,7 +204,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		screen.DrawImage(g.DeckTwo.Cards[0].Image, &g.DrawOptions)
 	}
 
-	text.Draw(screen, g.ScreenMessage, g.FontFace, g.Width-g.Width/5, g.Height-g.Height/15, g.FontColor)
+	text.Draw(screen, g.PlayerTwoMessage, g.FontFace, g.Width*9/10, g.Height*1/10, g.FontColor)
+	text.Draw(screen, g.PlayerOneMessage, g.FontFace, g.Width*9/10, g.Height*9/10, g.FontColor)
+
+	text.Draw(screen, g.PlayerTwoWins, g.FontFace, g.Width*2/3, g.Height*1/3, g.FontColor)
+	text.Draw(screen, g.PlayerOneWins, g.FontFace, g.Width*2/3, g.Height*2/3, g.FontColor)
 
 	return
 }
