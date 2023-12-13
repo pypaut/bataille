@@ -4,8 +4,9 @@
     - [X] Player one remaining cards
     - [X] Player two remaining cards
     - [X] Show last winner
-- [ ] Show last winner during play, not after
+- [X] Show last winner during play, not after
 - [ ] Testing
 - [ ] Background, with animations
+- [ ] Add a "Play" button to trigger next move
 - [ ] Mouse hovering
 - [ ] Controller support
