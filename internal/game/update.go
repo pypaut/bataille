@@ -16,7 +16,7 @@ func (g *Game) Update() (err error) {
 
 	g.UpdateMouseStates()
 
-	if g.ShowCards && g.JustClicked {
+	if g.ShowCards && g.JustClicked && g.IsCursorOnButton {
 		g.ShowCards = false
 
 		if g.CurrentWin == 1 {
@@ -35,7 +35,7 @@ func (g *Game) Update() (err error) {
 
 		g.ResetWinBadges()
 
-	} else if g.JustClicked {
+	} else if g.JustClicked && g.IsCursorOnButton {
 		g.ShowCards = true
 
 		if err = g.UpdateCurrentWin(); err != nil {
@@ -150,6 +150,8 @@ func (g *Game) CheckTotalNumberOfCards() error {
 }
 
 func (g *Game) UpdateMouseStates() {
+	g.CursorX, g.CursorY = ebiten.CursorPosition()
+
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		g.JustClicked = true
 		g.Clicking = true
@@ -159,5 +161,16 @@ func (g *Game) UpdateMouseStates() {
 
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 		g.Clicking = false
+	}
+
+	// Check if cursor is on button
+	if g.Width*6/9 < g.CursorX &&
+		g.CursorX < g.Width*6/9+280 &&
+		g.Height*2/5 < g.CursorY &&
+		g.CursorY < g.Height*2/5+100 {
+
+		g.IsCursorOnButton = true
+	} else {
+		g.IsCursorOnButton = false
 	}
 }

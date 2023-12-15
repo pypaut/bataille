@@ -34,8 +34,13 @@ type Game struct {
 	FontFace         font.Face
 	FontColor        color.Color
 
-	JustClicked bool
-	Clicking    bool
+	JustClicked      bool
+	Clicking         bool
+	CursorX          int
+	CursorY          int
+	IsCursorOnButton bool
+
+	PlayButtonImage *ebiten.Image
 }
 
 func NewGame() *Game {
@@ -55,6 +60,7 @@ func NewGame() *Game {
 		return nil
 	}
 
+	// Font
 	f, err := freetype.ParseFont(fontBytes)
 	if err != nil {
 		log.Println(err)
@@ -67,6 +73,9 @@ func NewGame() *Game {
 		Hinting: font.HintingFull,
 	})
 	fontColor := color.RGBA{R: 255, G: 255, B: 255, A: 255}
+
+	// PlayButton
+	playButtonImage := ebiten.NewImage(280, 100)
 
 	return &Game{
 		Width:  1280,
@@ -83,6 +92,8 @@ func NewGame() *Game {
 
 		FontFace:  fontFace,
 		FontColor: fontColor,
+
+		PlayButtonImage: playButtonImage,
 	}
 }
 
