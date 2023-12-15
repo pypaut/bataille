@@ -3,6 +3,8 @@ package game
 import (
 	"bataille/internal/deck"
 	"github.com/golang/freetype/truetype"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 	"golang.org/x/image/font"
 	"image/color"
 	"log"
@@ -13,7 +15,6 @@ import (
 
 	"github.com/golang/freetype"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text"
 )
 
@@ -38,6 +39,9 @@ type Game struct {
 	PlayerTwoWins    string
 	FontFace         font.Face
 	FontColor        color.Color
+
+	JustClicked bool
+	Clicking    bool
 }
 
 func NewGame() *Game {
@@ -45,7 +49,8 @@ func NewGame() *Game {
 	mainDeck.Shuffle()
 
 	deckOne, deckTwo := mainDeck.CutInTwo()
-	cardsWidth, cardsHeight := deckOne.Cards[0].Image.Size()
+	cardsWidth := deckOne.Cards[0].Image.Bounds().Dx()
+	cardsHeight := deckOne.Cards[0].Image.Bounds().Dy()
 	var drawOptions ebiten.DrawImageOptions
 
 	// Load font
@@ -91,13 +96,22 @@ func NewGame() *Game {
 // Update is called every tick (1/60 [s] by default).
 func (g *Game) Update() (err error) {
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
-		return errors.New("Game done!")
+		return errors.New("game done")
 	}
 
-	justClicked := inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		g.JustClicked = true
+		g.Clicking = true
+	} else {
+		g.JustClicked = false
+	}
+
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		g.Clicking = false
+	}
 
 	// Hide cards and re-distribute according to winner
-	if g.ShowCards && justClicked {
+	if g.ShowCards && g.JustClicked {
 		g.ShowCards = false
 
 		if g.CurrentWin == 1 {
@@ -116,7 +130,7 @@ func (g *Game) Update() (err error) {
 
 		g.ResetWinBadges()
 
-	} else if justClicked {
+	} else if g.JustClicked {
 		g.ShowCards = true
 
 		if err = g.UpdateCurrentWin(); err != nil {
@@ -132,6 +146,7 @@ func (g *Game) Update() (err error) {
 	}
 
 	g.UpdatePlayersMessages()
+	g.JustClicked = false
 
 	return nil
 }
@@ -273,6 +288,26 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	text.Draw(screen, g.PlayerTwoWins, g.FontFace, g.Width*2/3, g.Height*1/3, g.FontColor)
 	text.Draw(screen, g.PlayerOneWins, g.FontFace, g.Width*2/3, g.Height*2/3, g.FontColor)
+
+	// Draw button
+	buttonColor := color.RGBA{R: 150, B: 150, A: 200}
+	x, y := ebiten.CursorPosition()
+	if g.Width*6/9 < x && x < g.Width*6/9+280 && g.Height*2/5 < y && y < g.Height*2/5+100 {
+		// vector.DrawFilledRect(screen, float)
+
+		vector.DrawFilledRect(
+			screen, float32(g.Width)*6/9-5, float32(g.Height)*2/5-5, 280+10, 100+10, color.White, true,
+		)
+		if g.Clicking {
+			buttonColor = color.RGBA{R: 150, B: 150, A: 150}
+		} else {
+			buttonColor = color.RGBA{R: 200, B: 200, A: 200}
+		}
+	}
+	vector.DrawFilledRect(
+		screen, float32(g.Width)*6/9, float32(g.Height)*2/5, 280, 100, buttonColor, true,
+	)
+	text.Draw(screen, "Play", g.FontFace, g.Width*7/10, g.Height/2, g.FontColor)
 
 	return
 }
