@@ -163,12 +163,10 @@ func (g *Game) UpdateMouseStates() {
 		g.Clicking = false
 	}
 
-	// Check if cursor is on button
-	if g.Width*6/9 < g.CursorX &&
-		g.CursorX < g.Width*6/9+280 &&
-		g.Height*2/5 < g.CursorY &&
-		g.CursorY < g.Height*2/5+100 {
-
+	if int(g.PlayButtonX) <= g.CursorX &&
+		g.CursorX <= int(g.PlayButtonX)+g.PlayButtonImage.Bounds().Dx() &&
+		int(g.PlayButtonY) <= g.CursorY &&
+		g.CursorY <= int(g.PlayButtonY)+g.PlayButtonImage.Bounds().Dy() {
 		g.IsCursorOnButton = true
 	} else {
 		g.IsCursorOnButton = false

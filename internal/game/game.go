@@ -41,9 +41,16 @@ type Game struct {
 	IsCursorOnButton bool
 
 	PlayButtonImage *ebiten.Image
+	PlayButtonX     float64
+	PlayButtonY     float64
 }
 
 func NewGame() *Game {
+	// Game
+	width := 1280
+	height := 720
+
+	// Decks
 	mainDeck := deck.NewDeck()
 	mainDeck.Shuffle()
 
@@ -60,7 +67,6 @@ func NewGame() *Game {
 		return nil
 	}
 
-	// Font
 	f, err := freetype.ParseFont(fontBytes)
 	if err != nil {
 		log.Println(err)
@@ -78,8 +84,8 @@ func NewGame() *Game {
 	playButtonImage := ebiten.NewImage(280, 100)
 
 	return &Game{
-		Width:  1280,
-		Height: 720,
+		Width:  width,
+		Height: height,
 
 		CardWidth:  cardsWidth,
 		CardHeight: cardsHeight,
@@ -94,6 +100,8 @@ func NewGame() *Game {
 		FontColor: fontColor,
 
 		PlayButtonImage: playButtonImage,
+		PlayButtonX:     float64(width) * 6 / 9,
+		PlayButtonY:     float64(height) * 2 / 5,
 	}
 }
 

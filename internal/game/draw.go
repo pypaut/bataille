@@ -64,16 +64,16 @@ func (g *Game) DrawDeckTwo(screen *ebiten.Image) {
 }
 
 func (g *Game) DrawPlayButton(screen *ebiten.Image) {
-	g.DrawOptions.GeoM.Reset()
-	g.DrawOptions.GeoM.Translate(
-		float64(g.Width)*6/9,
-		float64(g.Height)*2/5,
-	)
-
 	buttonColor := color.RGBA{R: 150, B: 150, A: 200}
 	if g.IsCursorOnButton {
 		vector.DrawFilledRect(
-			screen, float32(g.Width)*6/9-5, float32(g.Height)*2/5-5, 280+10, 100+10, color.White, true,
+			screen,
+			float32(g.PlayButtonX)-5,
+			float32(g.PlayButtonY)-5,
+			float32(g.PlayButtonImage.Bounds().Dx())+10,
+			float32(g.PlayButtonImage.Bounds().Dy())+10,
+			color.White,
+			true,
 		)
 		if g.Clicking {
 			buttonColor = color.RGBA{R: 150, B: 150, A: 150}
@@ -81,7 +81,19 @@ func (g *Game) DrawPlayButton(screen *ebiten.Image) {
 			buttonColor = color.RGBA{R: 200, B: 200, A: 200}
 		}
 	}
+
 	g.PlayButtonImage.Fill(buttonColor)
+
+	g.DrawOptions.GeoM.Reset()
+	g.DrawOptions.GeoM.Translate(g.PlayButtonX, g.PlayButtonY)
+
 	screen.DrawImage(g.PlayButtonImage, &g.DrawOptions)
-	text.Draw(screen, "Play", g.FontFace, g.Width*7/10, g.Height/2, g.FontColor)
+	text.Draw(
+		screen,
+		"Play",
+		g.FontFace,
+		int(g.PlayButtonX*1.04),
+		int(g.PlayButtonY*1.23),
+		g.FontColor,
+	)
 }
