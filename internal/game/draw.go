@@ -1,0 +1,83 @@
+package game
+
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text"
+	"github.com/hajimehoshi/ebiten/v2/vector"
+	"image/color"
+)
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	g.DrawDeckOne(screen)
+	g.DrawDeckTwo(screen)
+
+	// Draw messages
+	text.Draw(screen, g.PlayerTwoMessage, g.FontFace, g.Width*9/10, g.Height*1/10, g.FontColor)
+	text.Draw(screen, g.PlayerOneMessage, g.FontFace, g.Width*9/10, g.Height*9/10, g.FontColor)
+
+	// Draw win badge
+	text.Draw(screen, g.PlayerTwoWins, g.FontFace, g.Width*2/3, g.Height*1/3, g.FontColor)
+	text.Draw(screen, g.PlayerOneWins, g.FontFace, g.Width*2/3, g.Height*2/3, g.FontColor)
+
+	g.DrawPlayButton(screen)
+
+	return
+}
+
+func (g *Game) DrawDeckOne(screen *ebiten.Image) {
+	g.DrawOptions.GeoM.Reset()
+	g.DrawOptions.GeoM.Translate(
+		float64(g.Width-g.CardWidth)/2,
+		float64(g.Height-g.CardHeight)/2+float64(g.CardHeight+g.Height/9),
+	)
+	screen.DrawImage(g.DeckOne.BackCard, &g.DrawOptions)
+
+	if g.ShowCards {
+		g.DrawOptions.GeoM.Reset()
+		g.DrawOptions.GeoM.Translate(
+			float64(g.Width-g.CardWidth)/2,
+			float64(g.Height-g.CardHeight)/2+float64(g.CardHeight)/2,
+		)
+
+		screen.DrawImage(g.DeckOne.Cards[0].Image, &g.DrawOptions)
+	}
+
+}
+
+func (g *Game) DrawDeckTwo(screen *ebiten.Image) {
+	g.DrawOptions.GeoM.Reset()
+	g.DrawOptions.GeoM.Translate(
+		float64(g.Width-g.CardWidth)/2,
+		float64(g.Height-g.CardHeight)/2-float64(g.CardHeight+g.Height/9),
+	)
+	screen.DrawImage(g.DeckTwo.BackCard, &g.DrawOptions)
+
+	if g.ShowCards {
+		g.DrawOptions.GeoM.Reset()
+		g.DrawOptions.GeoM.Translate(
+			float64(g.Width-g.CardWidth)/2,
+			float64(g.Height-g.CardHeight)/2-float64(g.CardHeight)/2,
+		)
+
+		screen.DrawImage(g.DeckTwo.Cards[0].Image, &g.DrawOptions)
+	}
+}
+
+func (g *Game) DrawPlayButton(screen *ebiten.Image) {
+	buttonColor := color.RGBA{R: 150, B: 150, A: 200}
+	x, y := ebiten.CursorPosition()
+	if g.Width*6/9 < x && x < g.Width*6/9+280 && g.Height*2/5 < y && y < g.Height*2/5+100 {
+		vector.DrawFilledRect(
+			screen, float32(g.Width)*6/9-5, float32(g.Height)*2/5-5, 280+10, 100+10, color.White, true,
+		)
+		if g.Clicking {
+			buttonColor = color.RGBA{R: 150, B: 150, A: 150}
+		} else {
+			buttonColor = color.RGBA{R: 200, B: 200, A: 200}
+		}
+	}
+	vector.DrawFilledRect(
+		screen, float32(g.Width)*6/9, float32(g.Height)*2/5, 280, 100, buttonColor, true,
+	)
+	text.Draw(screen, "Play", g.FontFace, g.Width*7/10, g.Height/2, g.FontColor)
+}
