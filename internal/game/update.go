@@ -168,7 +168,21 @@ func (g *Game) UpdateMouseStates() {
 		int(g.PlayButtonY) <= g.CursorY &&
 		g.CursorY <= int(g.PlayButtonY)+g.PlayButtonImage.Bounds().Dy() {
 		g.IsCursorOnButton = true
+		g.PlayButtonHoverAlpha += 50
 	} else {
 		g.IsCursorOnButton = false
+		g.PlayButtonHoverAlpha -= 50
+	}
+
+	g.PlayButtonHoverAlpha = Clamp(g.PlayButtonHoverAlpha, 0, 255)
+}
+
+func Clamp(toClamp, min, max int) int {
+	if toClamp < min {
+		return min
+	} else if max < toClamp {
+		return max
+	} else {
+		return toClamp
 	}
 }

@@ -40,9 +40,10 @@ type Game struct {
 	CursorY          int
 	IsCursorOnButton bool
 
-	PlayButtonImage *ebiten.Image
-	PlayButtonX     float64
-	PlayButtonY     float64
+	PlayButtonImage      *ebiten.Image
+	PlayButtonX          float64
+	PlayButtonY          float64
+	PlayButtonHoverAlpha int
 }
 
 func NewGame() *Game {

@@ -9,6 +9,7 @@
 - [ ] Background, with animations
 - [X] Add a "Play" button to trigger next move
     - [ ] Animation : grow the white
-    - [ ] Animation : the white is transparent and then turns white
+    - [X] Animation : the white is transparent and then turns white
+- [ ] Rm some Game fields and update directly from "update" (e.g. "g.Clicking")
 - [ ] Mouse hovering over cards
 - [ ] Controller support

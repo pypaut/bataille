@@ -65,21 +65,21 @@ func (g *Game) DrawDeckTwo(screen *ebiten.Image) {
 
 func (g *Game) DrawPlayButton(screen *ebiten.Image) {
 	buttonColor := color.RGBA{R: 150, B: 150, A: 200}
-	if g.IsCursorOnButton {
-		vector.DrawFilledRect(
-			screen,
-			float32(g.PlayButtonX)-5,
-			float32(g.PlayButtonY)-5,
-			float32(g.PlayButtonImage.Bounds().Dx())+10,
-			float32(g.PlayButtonImage.Bounds().Dy())+10,
-			color.White,
-			true,
-		)
-		if g.Clicking {
-			buttonColor = color.RGBA{R: 150, B: 150, A: 150}
-		} else {
-			buttonColor = color.RGBA{R: 200, B: 200, A: 200}
-		}
+
+	vector.DrawFilledRect(
+		screen,
+		float32(g.PlayButtonX)-5,
+		float32(g.PlayButtonY)-5,
+		float32(g.PlayButtonImage.Bounds().Dx())+10,
+		float32(g.PlayButtonImage.Bounds().Dy())+10,
+		color.NRGBA{R: 255, G: 255, B: 255, A: uint8(g.PlayButtonHoverAlpha)},
+		true,
+	)
+
+	if g.Clicking {
+		buttonColor = color.RGBA{R: 150, B: 150, A: 150}
+	} else {
+		buttonColor = color.RGBA{R: 200, B: 200, A: 200}
 	}
 
 	g.PlayButtonImage.Fill(buttonColor)
