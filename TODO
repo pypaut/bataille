@@ -7,6 +7,8 @@
 - [X] Show last winner during play, not after
 - [ ] Testing
 - [ ] Background, with animations
-- [ ] Add a "Play" button to trigger next move
-- [ ] Mouse hovering
+- [X] Add a "Play" button to trigger next move
+    - [ ] Animation : grow the white
+    - [ ] Animation : the white is transparent and then turns white
+- [ ] Mouse hovering over cards
 - [ ] Controller support
